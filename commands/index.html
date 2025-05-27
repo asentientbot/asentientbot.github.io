@@ -1,39 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="initial-scale=0.8">
-<link rel="stylesheet" href="/common/style.css">
-<script src="/common/scripts.js"></script>
-<title>green ball</title>
-</head>
-<body onload="randomizeTitle()">
-<div id="container">
-<div id="header">
-<div class="fixedWidth">
-<h1><a id="title" href="/">green ball</a></h1>
-</div>
-</div>
-<div class="fixedWidth">
-<h1>undocumented macOS commands</h1>
-Seemingly undiscovered miscellaneous stuff.
-<br>
-<br><h2>disable Quick Actions</h2>
-Hide Mojave's Finder's Quick Actions toolbar.
-<br><code>defaults write com.apple.Finder ShowQuickActionsBar -bool false</code>
-<br>
-<br><h2>disable zoom button popup</h2>
-Revert Catalina's green window button to its previous unintrusive existence.
-<br><code>defaults write -g NSZoomButtonShowMenu -bool false</code>
-<br>
-<br><h2>read serial from filesystem</h2>
-Useful if you have a disk (image) but lack access to the machine itself. Run as root and adjust path if necessary. Tested on Yosemite and newer.
-<br><code>find /var/folders -name consolidated.db -exec sqlite3 -batch {} .dump \;</code>
-<br>
-<br><h2>disable iOS Simulator dyld cache</h2>
-Prevent automatic CPU-heavy generation of multi-gigabyte files in <code>~/Library/Developer/CoreSimulator/Caches/dyld</code>. Does <i>not</i> break iOS Simulator, but might impact its performance. Tested on Xcode 12 and newer.
-<br><code>defaults write com.apple.CoreSimulator AutomaticallyGenerateDyldShareCache -bool false</code>
-</div>
-</div>
-</body>
-</html>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="initial-scale=1"><link rel="stylesheet" href="/style.css"><link rel="icon" href="/icon.png"><title>amy's website</title></head><body><div class="top"><h1><a href="/">amy's website</a></h1><p><a href="https://github.com/asentientbot" target="_blank">github</a> / <a href="https://asentientbot.ca/@a" target="_blank">fedi</a> / <a href="mailto:asentientbot@gmail.com">email</a></p></div><div><h2>undocumented macOS commands</h2><p>Hide Mojave+ Finder's <b>Quick Actions</b> toolbar, which covers up file metadata in columns view.</p><pre><code>defaults write com.apple.Finder ShowQuickActionsBar -bool false
+</code></pre><p>Hide Catalina+ green window button popup.</p><pre><code>defaults write -g NSZoomButtonShowMenu -bool false
+</code></pre><p>Read serial from filesystem; tested on Yosemite+. Run as root or adjust the path for an external disk [image] as needed.</p><pre><code>find /private/var/folders -name consolidated.db -exec sqlite3 -batch {} .dump \;
+</code></pre></div></body></html>
